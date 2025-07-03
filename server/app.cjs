@@ -160,15 +160,16 @@ app.post("/createNewClub", async (req, res) => {
             if (facultyDetails.length) {
                 if (studentDetails.length) {
                     let newClub_ = new Club({
-                        clubName: name,
-                        clubPresident: studentDetails[0].name,
+                        name: name,
+                        president: studentDetails[0].name,
                         category: category,
                         faculty: facultyDetails[0].name,
                         status: status,
                         maxMembers: maxMemberCount,
-
                     });
                     newClub_.save();
+                    console.log("CLUb created is: ");
+                    console.log(newClub_);
                     res.json({ message: "Club Created Successfully", flag: "success" });
                 } else {
                     res.json({ message: "President Not Found", flag: "error" });

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const clubSchema = new mongoose.Schema({
-    clubName: {
+    name: {
         type: String,
         required: true
     },
-    clubPresident: {
+    president: {
         //stores the regNo.
         type: String,
         required: true
@@ -18,11 +18,11 @@ const clubSchema = new mongoose.Schema({
         required: true
     },
     members: [{
-        regNo:{
-            type:String,
+        regNo: {
+            type: String,
         },
-        Name:{
-            type:String
+        name: {
+            type: String
         }
     }],
     faculty: {
@@ -32,7 +32,6 @@ const clubSchema = new mongoose.Schema({
     },
     createdAt: {
         type: String,
-        
     },
     updatedAt: {
         type: String,
