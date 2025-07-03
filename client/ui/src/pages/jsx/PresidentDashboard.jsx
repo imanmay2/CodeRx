@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../css/PresidentDashboard.module.css';
-
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const PresidentDashboard = () => {
     const [clubMembers, setClubMembers] = useState([
         { id: 'm1', name: 'John Doe', email: 'john.doe@example.com', role: 'Member' },
@@ -9,6 +11,16 @@ const PresidentDashboard = () => {
         { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Member' },
     ]);
 
+
+    useEffect(()=>{
+        let func=async()=>{
+            const response=await axios.get("http://localhost:8080/getMembers",{withCredentials:true});
+            if(response.data){
+                
+            }
+        }
+    })
+    const navigate=useNavigate();
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
     const [selectedMember, setSelectedMember] = useState(null);
@@ -120,11 +132,15 @@ const PresidentDashboard = () => {
                             <div className="dropdown-item">
                                 <i className="icon-user">👤</i>
                                 {/* User Id to be given below */}
-                                <span>12458796</span>
+                                <span>{Cookies.get('id')}</span>
                             </div>
-                            <div className="dropdown-item" onClick={() => {
+                            <div className="dropdown-item" onClick={async () => {
                                 // Add your logout logic here
+                                const response=await axios.get("http://localhost:8080/logout", { withCredentials: true });
+                                if(response){
+                                    navigate("/");
                                 console.log('Logging out...');
+                                }
                             }}>
                                 <i className="icon-logout">⎋</i>
                                 <span>Logout</span>

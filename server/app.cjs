@@ -161,16 +161,17 @@ app.post("/createNewClub", async (req, res) => {
                 if (studentDetails.length) {
                     let newClub_ = new Club({
                         name: name,
-                        president: studentDetails[0].name,
+                        president: president,
                         category: category,
-                        faculty: facultyDetails[0].name,
+                        faculty: facultyCoordinator,
                         status: status,
                         maxMembers: maxMemberCount,
+                        members:[{regNo:president,name:studentDetails[0].name}]
                     });
                     newClub_.save();
-                    console.log("CLUb created is: ");
+                    console.log("ClUb created is: ");
                     console.log(newClub_);
-                    res.json({ message: "Club Created Successfully", flag: "success" });
+                    res.json({ message: "Club Created Successfully", flag: "success" ,presidentName:studentDetails[0].name,facultyName:facultyDetails[0].name});
                 } else {
                     res.json({ message: "President Not Found", flag: "error" });
                 }
@@ -191,9 +192,27 @@ app.post("/createNewClub", async (req, res) => {
 app.get("/getClubData", async (req, res) => {
     try {
         const clubData = await Club.find();
-        res.json(clubData);
+        let data=[];
+        for (let index = 0; index < clubData.length; index++) {
+            const element = clubData[index];
+            //Find the name of the president and faculty
+            let facultyDetails = await User.find({ id: element.faculty, role: "faculty" });
+            let studentDetails = await User.find({ id: element.president, role: "president" });
+            data.push({_id:element._id,name:element.name.trim(),president:studentDetails[0].name,faculty:facultyDetails[0].name,members:element.members,maxMemberCount:element.maxMembers,category:element.category,status:element.status})
+        }
+        res.json(data);
     } catch (err) {
         res.json({ message: err.msg, flag: "error" });
+    }
+})
+
+
+//sending member details.
+app.get("/getMembers",(req,res)=>{
+    try{
+
+    } catch(err){
+        res.json({message:err.message,flag:"error"});
     }
 })
 
