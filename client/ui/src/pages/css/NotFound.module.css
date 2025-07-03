@@ -1,0 +1,245 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    padding: 3rem;
+    background: rgba(13, 17, 23, 0.8);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 232, 31, 0.1);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    animation: fadeInScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.title {
+    font-size: 6rem;
+    font-weight: 800;
+    color: #ffe81f;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(255, 232, 31, 0.7);
+    letter-spacing: 0.5rem;
+    background: linear-gradient(to right, #ffe81f, #ffcc00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 1.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 1rem 0 2rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.message {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 2rem 0;
+    font-style: italic;
+}
+
+.hologram {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    margin: 2rem auto;
+    perspective: 1000px;
+}
+
+.obiWan {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(58, 134, 255, 0.4);
+    transform-style: preserve-3d;
+    animation: float 4s ease-in-out infinite;
+}
+
+.hologramEffect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+            rgba(58, 134, 255, 0.2) 0%,
+            rgba(255, 232, 31, 0.1) 50%,
+            rgba(58, 134, 255, 0.2) 100%);
+    border-radius: 8px;
+    z-index: -1;
+    filter: blur(10px);
+    animation: pulse 6s ease-in-out infinite;
+}
+
+.homeButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #3a86ff, #4895ef);
+    color: white;
+    font-weight: 600;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.homeButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(58, 134, 255, 0.4);
+}
+
+.homeButton:active {
+    transform: translateY(1px);
+}
+
+.homeButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+    z-index: 1;
+}
+
+.buttonIcon {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+/* Stars background */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+}
+
+/* Animations */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotateY(0deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotateY(5deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotateY(0deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.2;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content {
+        padding: 2rem;
+        width: 90%;
+    }
+
+    .title {
+        font-size: 4rem;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+    }
+
+    .hologram {
+        width: 250px;
+        height: 167px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 3rem;
+    }
+
+    .subtitle {
+        font-size: 1.25rem;
+    }
+
+    .message {
+        font-size: 1rem;
+    }
+
+    .homeButton {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}

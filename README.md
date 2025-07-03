@@ -1,1 +1,2 @@
-# CIMP_
+# _CIMP_
+College Information Management Portal
