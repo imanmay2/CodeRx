@@ -1,4 +1,5 @@
 .dashboard {
+    width: 60rem !important;
     background: #0f172a;
     min-height: 100vh;
     color: rgba(255, 255, 255, 0.92);
@@ -194,8 +195,9 @@
     font-size: 1rem;
 }
 
+/* Request form */
 .formContainer {
-    background: rgba(30, 41, 59, 0.5);
+    background: rgba(30, 41, 59, 0.6);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 2rem;
@@ -203,161 +205,154 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.formHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-}
-
-.formHeader h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+.formTitle {
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem;
     color: white;
+    font-weight: 600;
+    background: linear-gradient(90deg, #3a86ff, #4cc9f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
-.helpButton {
+.formSubtitle {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 2rem;
+    font-size: 0.95rem;
+}
+
+.memberCard {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.requestFormCard {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.memberCard:hover {
+    border-color: rgba(58, 134, 255, 0.3);
+}
+
+.cardHeader {
+    display: flex;
+    align-self: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.0rem;
+    font-weight: 800;
+}
+
+
+.removeButton {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: none;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.helpButton:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+.removeButton:hover {
+    background: rgba(239, 68, 68, 0.2);
 }
 
-.formatTooltip {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #1e293b;
-    padding: 1rem;
-    border-radius: 8px;
-    z-index: 10;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    animation: fadeIn 0.2s ease-out;
-}
 
-.formatTooltip p {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.formatTooltip ul {
-    margin: 0;
-    padding-left: 1.25rem;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.memberForm {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
 
 .inputGroup {
-    position: relative;
+    margin-bottom: 0.5rem;
+    width: 30rem !important;
 }
 
 .inputGroup label {
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
-    color: white;
-    font-size: 0.95rem;
 }
 
-.memberTextarea {
+.inputGroup input {
     width: 100%;
-    padding: 1rem;
+    padding: 0.75rem 1rem;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     color: white;
     font-family: inherit;
     font-size: 0.95rem;
-    resize: vertical;
-    min-height: 150px;
     transition: all 0.3s ease;
 }
 
-.memberTextarea:focus {
+.inputGroup input:focus,
+.inputGroup select:focus {
     outline: none;
     border-color: #3a86ff;
     box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
 }
 
-.inputFooter {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
+.inputGroup select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a0aec0'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
 }
 
-.counter {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+.errorInput {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
 }
 
-.exampleLink {
-    font-size: 0.85rem;
-    color: #3a86ff;
-    cursor: pointer;
-    text-decoration: underline;
-    transition: color 0.2s ease;
-}
-
-.exampleLink:hover {
-    color: #63b3ed;
+.errorText {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: #ef4444;
 }
 
 .formActions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    margin-top: 1rem;
     gap: 1rem;
 }
 
-.clearButton {
+.addButton {
     padding: 0.75rem 1.5rem;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.clearButton:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
+.addButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.5);
     color: white;
 }
 
-.clearButton:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .submitButton {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 2rem;
     background: linear-gradient(135deg, #3a86ff, #4895ef);
     color: white;
     border: none;
@@ -379,41 +374,23 @@
     background: #4a5568;
 }
 
-.submitButton svg {
-    width: 18px;
-    height: 18px;
-    fill: white;
-}
-
-.note {
+.formFooter {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-top: 1.5rem;
-    padding: 0.75rem;
+    margin-top: 2rem;
+    padding: 1rem;
     background: rgba(46, 204, 113, 0.1);
     border-radius: 8px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
 }
 
-.note svg {
+.formFooter svg {
     width: 20px;
     height: 20px;
     fill: #2ecc71;
     flex-shrink: 0;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 

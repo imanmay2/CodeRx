@@ -76,7 +76,7 @@ const LoginPage = () => {
                 showMessage('Passwords do not match', 'error');
                 return;
             }
-            const response = await axios.post("http://localhost:8080/signUp", { Name: name, Email: email, Password: password, Role: role }, {
+            const response = await axios.post("http://localhost:8080/signUp", { Name: name, Email: email, Password: password, Role: role,id:id }, {
                 withCredentials: true
             });
             if (response.data.flag==="success") {
@@ -95,8 +95,6 @@ const LoginPage = () => {
                 setTimeout(() => setIsLogin(true), 2000);
             }, 2000);
         }
-
-
     };
 
     const showMessage = (text, type) => {
@@ -259,7 +257,7 @@ const LoginPage = () => {
                                 <button
                                     type="button"
                                     className={role === 'student' ? styles.active : ''}
-                                    onClick={() => setRole('student')}
+                                    onClick={() => setRole('president')}
                                 >
                                     <svg viewBox="0 0 24 24" fill="none">
                                         <path d="M12 2L4 7v10l8 5 8-5V7L12 2z" stroke="currentColor" strokeWidth="2" />

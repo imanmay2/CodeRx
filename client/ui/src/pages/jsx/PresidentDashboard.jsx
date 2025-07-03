@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from '../css/PresidentDashboard.module.css';
 
 const PresidentDashboard = () => {
     const [clubMembers, setClubMembers] = useState([
         { id: 'm1', name: 'John Doe', email: 'john.doe@example.com', role: 'Member' },
-        { id: 'm2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'Secretary' },
+        { id: 'm2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'President' },
         { id: 'm3', name: 'Peter Jones', email: 'peter.jones@example.com', role: 'Member' },
-        { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Treasurer' },
+        { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Member' },
     ]);
 
-    const [newMemberRequestText, setNewMemberRequestText] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
     const [selectedMember, setSelectedMember] = useState(null);
@@ -20,36 +19,75 @@ const PresidentDashboard = () => {
         setTimeout(() => setMessage(''), 3000);
     };
 
-    const handleAddMemberRequest = (e) => {
-        e.preventDefault();
-        if (!newMemberRequestText.trim()) {
-            showMessageBox('Please enter member details to send request', 'error');
-            return;
+    const [members, setMembers] = useState([{ regNo: '', name: '' }]);
+    const [errors, setErrors] = useState([]);
+
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const handleChange = (index, e) => {
+        const { name, value } = e.target;
+        const updatedMembers = [...members];
+        updatedMembers[index][name] = value;
+        setMembers(updatedMembers);
+
+        // Clear error when field is edited
+        if (errors.includes(`${name}-${index}`)) {
+            setErrors(errors.filter(err => err !== `${name}-${index}`));
         }
-        showMessageBox('Request sent to Admin for approval!', 'success');
-        setNewMemberRequestText('');
     };
 
-    const handleRoleChange = (id, newRole) => {
-        setClubMembers(clubMembers.map(member =>
-            member.id === id ? { ...member, role: newRole } : member
-        ));
-        showMessageBox('Member role updated', 'success');
-        setSelectedMember(null);
+    const addMember = () => {
+        setMembers([...members, { regNo: '', name: '' }]);
     };
 
-    const [inputText, setInputText] = useState('');
-    const [formatHint, setFormatHint] = useState(false);
+    const removeMember = (index) => {
+        if (members.length > 1) {
+            const updatedMembers = [...members];
+            updatedMembers.splice(index, 1);
+            setMembers(updatedMembers);
+
+            // Remove related errors
+            const fieldErrors = ['regNo', 'name']
+                .map(field => `${field}-${index}`);
+            setErrors(errors.filter(err => !fieldErrors.includes(err)));
+        }
+    };
+
+    const validate = () => {
+        const newErrors = [];
+        members.forEach((member, index) => {
+            if (!member.regNo.trim()) newErrors.push(`regNo-${index}`);
+            if (!member.name.trim()) newErrors.push(`name-${index}`);
+        });
+        setErrors(newErrors);
+        return newErrors.length === 0;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!inputText.trim()) {
-            onSubmit('Please enter at least one member', 'error');
-            return;
+        if (validate()) {
+            onSubmit(members);
+            setMembers([{ regNo: '', name: '' }]);
         }
-        onSubmit(inputText, 'success');
-        setInputText('');
     };
+
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        }
+
+        // Add event listener
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            // Clean up
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <div className={styles.dashboard}>
@@ -63,11 +101,36 @@ const PresidentDashboard = () => {
             {/* Header */}
             <header className={styles.header}>
                 <div className={styles.headerContent}>
-                    <h1>President Dashboard</h1>
+                    <h1>Club President Dashboard</h1>
                     <p>Manage your club members and request new additions</p>
                 </div>
-                <div className={styles.profileBadge}>
-                    <span>P</span> {/* President initial */}
+
+                {/* profile button */}
+                <div className="profile-dropdown" ref={dropdownRef}>
+                    <button className="profile-button" onClick={() => setShowDropdown(!showDropdown)}>
+                        <div className="profile-avatar">
+                            <span>A</span> {/* Replace with admin initial or image */}
+                        </div>
+                        <span>President</span>
+                        <i className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▼</i>
+                    </button>
+
+                    {showDropdown && (
+                        <div className="dropdown-menu">
+                            <div className="dropdown-item">
+                                <i className="icon-user">👤</i>
+                                {/* User Id to be given below */}
+                                <span>12458796</span>
+                            </div>
+                            <div className="dropdown-item" onClick={() => {
+                                // Add your logout logic here
+                                console.log('Logging out...');
+                            }}>
+                                <i className="icon-logout">⎋</i>
+                                <span>Logout</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -138,77 +201,86 @@ const PresidentDashboard = () => {
 
             {/* Request form */}
             <div className={styles.formContainer}>
-                <div className={styles.formHeader}>
-                    <h3>Request New Members</h3>
-                    <button
-                        className={styles.helpButton}
-                        onClick={() => setFormatHint(!formatHint)}
-                        aria-label="Format help"
-                    >
-                        ?
-                    </button>
-                    {formatHint && (
-                        <div className={styles.formatTooltip}>
-                            <p>Enter one member per line or separate with commas:</p>
-                            <ul>
-                                <li>Full Name (email@example.com)</li>
-                                <li>First Last, email@example.com</li>
-                                <li>email@example.com</li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                <h3 className={styles.formTitle}>Add New Members Request</h3>
+                <p className={styles.formSubtitle}>Enter details for each member you want to add</p>
 
-                <form onSubmit={handleSubmit} className={styles.memberForm}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="memberInput">Member Information</label>
-                        <textarea
-                            id="memberInput"
-                            value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                            placeholder={`John Doe (john@example.com)\nJane Smith, jane@example.com\n...`}
-                            className={styles.memberTextarea}
-                            rows={6}
-                        />
-                        <div className={styles.inputFooter}>
-                            <span className={styles.counter}>
-                                {inputText.split(/[\n,]/).filter(Boolean).length} members
-                            </span>
-                            <span className={styles.exampleLink} onClick={() => setInputText(
-                                `John Doe (john@example.com)\nJane Smith, jane@example.com\nmike@example.com`
-                            )}>
-                                Insert example
-                            </span>
+                <form onSubmit={handleSubmit}>
+                    {members.map((member, index) => (
+                        <div key={index} className={`${styles.memberCard} ${styles.requestFormCard}`}>
+                            <div className={styles.cardHeader}>
+                                <span>Member #{index + 1}</span>
+                                {members.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className={styles.removeButton}
+                                        onClick={() => removeMember(index)}
+                                        aria-label="Remove member"
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+
+                            <div >
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor={`regNo-${index}`}>Registration Number*</label>
+                                    <input
+                                        id={`regNo-${index}`}
+                                        type="text"
+                                        name="regNo"
+                                        value={member.regNo}
+                                        onChange={(e) => handleChange(index, e)}
+                                        className={errors.includes(`regNo-${index}`) ? styles.errorInput : ''}
+                                        placeholder="2023CS101"
+                                    />
+                                    {errors.includes(`regNo-${index}`) && (
+                                        <span className={styles.errorText}>Required field</span>
+                                    )}
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor={`name-${index}`}>Full Name*</label>
+                                    <input
+                                        id={`name-${index}`}
+                                        type="text"
+                                        name="name"
+                                        value={member.name}
+                                        onChange={(e) => handleChange(index, e)}
+                                        className={errors.includes(`name-${index}`) ? styles.errorInput : ''}
+                                        placeholder="John Doe"
+                                    />
+                                    {errors.includes(`name-${index}`) && (
+                                        <span className={styles.errorText}>Required field</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    ))}
 
                     <div className={styles.formActions}>
                         <button
                             type="button"
-                            className={styles.clearButton}
-                            onClick={() => setInputText('')}
-                            disabled={!inputText}
+                            className={styles.addButton}
+                            onClick={addMember}
                         >
-                            Clear
+                            + Add Another Member
                         </button>
+
                         <button
                             type="submit"
                             className={styles.submitButton}
-                            disabled={!inputText}
+                            disabled={members.some(m => Object.values(m).some(v => !v.trim()))}
                         >
                             Send Request to Admin
-                            <svg viewBox="0 0 24 24">
-                                <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
-                            </svg>
                         </button>
                     </div>
                 </form>
 
-                <div className={styles.note}>
+                <div className={styles.formFooter}>
                     <svg viewBox="0 0 24 24">
                         <path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" />
                     </svg>
-                    <p>All requests require admin approval before members are added</p>
+                    <p>All requests will be reviewed by admin before members are added</p>
                 </div>
             </div>
 
