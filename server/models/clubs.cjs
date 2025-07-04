@@ -20,7 +20,7 @@ const clubSchema = new mongoose.Schema({
         },
         name: {
             type: String
-        }
+        },email:String
     }],
     faculty: {
         //stores the faculty_id

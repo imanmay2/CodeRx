@@ -166,12 +166,12 @@ app.post("/createNewClub", async (req, res) => {
                         faculty: facultyCoordinator,
                         status: status,
                         maxMembers: maxMemberCount,
-                        members:[{regNo:president,name:studentDetails[0].name}]
+                        members: [{ regNo: president, name: studentDetails[0].name }]
                     });
                     newClub_.save();
                     console.log("ClUb created is: ");
                     console.log(newClub_);
-                    res.json({ message: "Club Created Successfully", flag: "success" ,presidentName:studentDetails[0].name,facultyName:facultyDetails[0].name});
+                    res.json({ message: "Club Created Successfully", flag: "success", presidentName: studentDetails[0].name, facultyName: facultyDetails[0].name });
                 } else {
                     res.json({ message: "President Not Found", flag: "error" });
                 }
@@ -192,13 +192,13 @@ app.post("/createNewClub", async (req, res) => {
 app.get("/getClubData", async (req, res) => {
     try {
         const clubData = await Club.find();
-        let data=[];
+        let data = [];
         for (let index = 0; index < clubData.length; index++) {
             const element = clubData[index];
             //Find the name of the president and faculty
             let facultyDetails = await User.find({ id: element.faculty, role: "faculty" });
             let studentDetails = await User.find({ id: element.president, role: "president" });
-            data.push({_id:element._id,name:element.name.trim(),president:studentDetails[0].name,faculty:facultyDetails[0].name,members:element.members,maxMemberCount:element.maxMembers,category:element.category,status:element.status})
+            data.push({ _id: element._id, name: element.name.trim(), president: studentDetails[0].name, faculty: facultyDetails[0].name, members: element.members, maxMemberCount: element.maxMembers, category: element.category, status: element.status })
         }
         res.json(data);
     } catch (err) {
@@ -208,14 +208,31 @@ app.get("/getClubData", async (req, res) => {
 
 
 //sending member details.
-app.get("/getMembers",(req,res)=>{
-    try{
-
-    } catch(err){
-        res.json({message:err.message,flag:"error"});
+app.get("/getMembers/:president_id", async (req, res) => {
+    try {
+        const { president_id } = req.params;
+        const clubMembers = await Club.find({ president: president_id });
+        res.json({ data_: clubMembers[0].members, flag: "success",faculty_id:clubMembers[0].faculty });
+    } catch (err) {
+        res.json({ message: err.message, flag: "error" });
     }
-})
+});
 
+
+app.get("/getInfo/:president_id/:faculty_id", async (req, res) => {
+    try {
+        const { president_id, faculty_id } = req.params;
+        let facultyDetails = await User.find({ id: faculty_id, role: "faculty" });
+        let studentDetails = await User.find({ id: president_id, role: "president" });
+        console.log(req.params);
+
+        let obj1={_id:facultyDetails[0]._id,regNo:faculty_id,name:facultyDetails[0].name,role:"Faculty",email:facultyDetails[0].email};
+        let obj2={_id:studentDetails[0]._id,regNo:president_id,name:studentDetails[0].name,role:"President",email:studentDetails[0].email};
+        res.json({data_:[obj1,obj2],flag:"success"});
+    } catch (err) {
+        res.json({ message: err.message, flag: "error" });
+    }
+});
 
 
 //logging out.

@@ -5,22 +5,46 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const PresidentDashboard = () => {
     const [clubMembers, setClubMembers] = useState([
-        { id: 'm1', name: 'John Doe', email: 'john.doe@example.com', role: 'Member' },
-        { id: 'm2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'President' },
-        { id: 'm3', name: 'Peter Jones', email: 'peter.jones@example.com', role: 'Member' },
-        { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Member' },
+        // { id: 'm1', name: 'John Doe', email: 'john.doe@example.com', role: 'Member' },
+        // { id: 'm2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'President' },
+        // { id: 'm3', name: 'Peter Jones', email: 'peter.jones@example.com', role: 'Member' },
+        // { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Member' },
     ]);
 
+    let [mem, setMem] = useState([]);
+    let [mem2, setMem2] = useState([]);
 
-    useEffect(()=>{
-        let func=async()=>{
-            const response=await axios.get("http://localhost:8080/getMembers",{withCredentials:true});
-            if(response.data){
-                
-            }
+    let [f_id, set_f_id] = useState("");
+    useEffect(() => {
+    const func = async () => {
+        const response = await axios.get(`http://localhost:8080/getMembers/${Cookies.get('id')}`, { withCredentials: true });
+        if (response.data.flag === "success") {
+            setMem(response.data.data_);
+            set_f_id(response.data.faculty_id);
         }
-    })
-    const navigate=useNavigate();
+    };
+    func();
+}, []);
+
+// New useEffect that runs when f_id is set
+useEffect(() => {
+    if (!f_id) return; 
+
+    const func2 = async () => {
+        const response = await axios.get(`http://localhost:8080/getInfo/${Cookies.get('id')}/${f_id}`,{withCredentials:true});
+        if (response.data.flag === "success") {
+            console.log(response.data.data_);
+            setMem2([mem, ...response.data.data_]); // put mem at the start of mem2
+        }
+    };
+    func2();
+}, [f_id]); // Run when f_id is updated
+
+
+    
+    // console.log(mem);
+    // console.log(mem2);
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
     const [selectedMember, setSelectedMember] = useState(null);
@@ -136,10 +160,10 @@ const PresidentDashboard = () => {
                             </div>
                             <div className="dropdown-item" onClick={async () => {
                                 // Add your logout logic here
-                                const response=await axios.get("http://localhost:8080/logout", { withCredentials: true });
-                                if(response){
+                                const response = await axios.get("http://localhost:8080/logout", { withCredentials: true });
+                                if (response) {
                                     navigate("/");
-                                console.log('Logging out...');
+                                    console.log('Logging out...');
                                 }
                             }}>
                                 <i className="icon-logout">⎋</i>
