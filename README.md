@@ -87,7 +87,7 @@ CIMP (Club Information Management Portal) is a full-stack web application design
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/cimp.git
+git clone [https://github.com/yourusername/cimp.git](https://github.com/imanmay2/CodeRx)
 cd cimp
 
 # 2. Install dependencies
@@ -101,4 +101,4 @@ npm run dev
 # 4. Start Backend (Express)
 cd server
 npm install
-npm run dev
+nodemon app.cjs
