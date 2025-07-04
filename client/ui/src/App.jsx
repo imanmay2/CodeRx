@@ -3,6 +3,7 @@ import LoginPage from './pages/jsx/Auth'
 import AdminDashboard from './pages/jsx/AdminDashboard'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import PresidentDashboard from './pages/jsx/PresidentDashboard';
+import FacultyDashboard from './pages/jsx/FacultyDashboard';
 function App() {
   const router = createBrowserRouter([
     {
@@ -19,7 +20,7 @@ function App() {
     },
     {
       path: "/facultyDashBoard",
-      element: <AdminDashboard />
+      element: <FacultyDashboard />
     }
   ])
   return (
