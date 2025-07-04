@@ -1,49 +1,79 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from '../css/PresidentDashboard.module.css';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const PresidentDashboard = () => {
+    let arr = [];
     const [clubMembers, setClubMembers] = useState([
         // { id: 'm1', name: 'John Doe', email: 'john.doe@example.com', role: 'Member' },
         // { id: 'm2', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'President' },
         // { id: 'm3', name: 'Peter Jones', email: 'peter.jones@example.com', role: 'Member' },
         // { id: 'm4', name: 'Emily White', email: 'emily.white@example.com', role: 'Member' },
+
     ]);
 
     let [mem, setMem] = useState([]);
     let [mem2, setMem2] = useState([]);
 
+    const [clubName, setClubName] = useState("");
+    const [presidentName, setPresidentName] = useState("");
+
     let [f_id, set_f_id] = useState("");
     useEffect(() => {
-    const func = async () => {
-        const response = await axios.get(`http://localhost:8080/getMembers/${Cookies.get('id')}`, { withCredentials: true });
-        if (response.data.flag === "success") {
-            setMem(response.data.data_);
-            set_f_id(response.data.faculty_id);
-        }
-    };
-    func();
-}, []);
+        const func = async () => {
+            const response = await axios.get(`http://localhost:8080/getMembers/${Cookies.get('id')}`, { withCredentials: true });
+            console.log(response.data);
+            if (response.data.flag === "success") {
+                setMem(response.data.data_);
+                set_f_id(response.data.faculty_id);
+                setClubName(response.data.clubName);
+            }
+        };
+        func();
+    }, []);
 
-// New useEffect that runs when f_id is set
-useEffect(() => {
-    if (!f_id) return; 
+    // New useEffect that runs when f_id is set
+    useEffect(() => {
+        if (!f_id) return;
 
-    const func2 = async () => {
-        const response = await axios.get(`http://localhost:8080/getInfo/${Cookies.get('id')}/${f_id}`,{withCredentials:true});
-        if (response.data.flag === "success") {
-            console.log(response.data.data_);
-            setMem2([mem, ...response.data.data_]); // put mem at the start of mem2
-        }
-    };
-    func2();
-}, [f_id]); // Run when f_id is updated
-
+        const func2 = async () => {
+            const response = await axios.get(`http://localhost:8080/getInfo/${Cookies.get('id')}/${f_id}`, { withCredentials: true });
+            if (response.data.flag === "success") {
+                console.log(response.data.data_);
+                setMem2([mem, ...response.data.data_]); // put mem at the start of mem2.
+                setPresidentName(response.data.data_[1].name);
+            }
+        };
+        func2();
+    }, [f_id]); // Run when f_id is updated.
 
     
+    // [[{mem1},{mem2}],{faculty},{president}].
+    useEffect(() => {
+        if (!mem || mem.length === 0) return;
+
+        const newArr = [];
+        for (let i = 1; i < mem2.length; i++) {
+            newArr.push(mem2[i]);
+        }
+
+        // Check if mem[0] exists and is an array
+        if (Array.isArray(mem2[0])) {
+            for (let i = 0; i < mem2[0].length; i++) {
+                newArr.push({...mem2[0][i],role:"Member"});
+            }
+        }
+
+        
+
+        setClubMembers(newArr);
+    }, [mem2]);
+
+
+
     // console.log(mem);
-    // console.log(mem2);
+    console.log(mem2);
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('success');
@@ -55,7 +85,7 @@ useEffect(() => {
         setTimeout(() => setMessage(''), 3000);
     };
 
-    const [members, setMembers] = useState([{ regNo: '', name: '' }]);
+    const [members, setMembers] = useState([{ regNo: '', name: '',email: '' }]);
     const [errors, setErrors] = useState([]);
 
     const [showDropdown, setShowDropdown] = useState(false);
@@ -74,7 +104,7 @@ useEffect(() => {
     };
 
     const addMember = () => {
-        setMembers([...members, { regNo: '', name: '' }]);
+        setMembers([...members, { regNo: '', name: '',email: '' }]);
     };
 
     const removeMember = (index) => {
@@ -84,7 +114,7 @@ useEffect(() => {
             setMembers(updatedMembers);
 
             // Remove related errors
-            const fieldErrors = ['regNo', 'name']
+            const fieldErrors = ['regNo', 'name','email']
                 .map(field => `${field}-${index}`);
             setErrors(errors.filter(err => !fieldErrors.includes(err)));
         }
@@ -95,16 +125,20 @@ useEffect(() => {
         members.forEach((member, index) => {
             if (!member.regNo.trim()) newErrors.push(`regNo-${index}`);
             if (!member.name.trim()) newErrors.push(`name-${index}`);
+            if (!member.email.trim()) newErrors.push(`email-${index}`);
         });
         setErrors(newErrors);
         return newErrors.length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            onSubmit(members);
-            setMembers([{ regNo: '', name: '' }]);
+            const response = await axios.post("http://localhost:8080/addNewMember", {presidentName:presidentName,clubName:clubName,members:members} ,{withCredentials: true});
+            if(response.flag === "success") {
+                showMessageBox(response.data.message, response.data.flag);
+                setMembers([{ regNo: '', name: '',email:'' }]);
+            }
         }
     };
 
@@ -156,7 +190,7 @@ useEffect(() => {
                             <div className="dropdown-item">
                                 <i className="icon-user">👤</i>
                                 {/* User Id to be given below */}
-                                <span>{Cookies.get('id')}</span>
+                                <span>{Cookies?.get('id')}</span>
                             </div>
                             <div className="dropdown-item" onClick={async () => {
                                 // Add your logout logic here
@@ -184,23 +218,24 @@ useEffect(() => {
                 <div className={styles.membersGrid}>
                     {clubMembers.length > 0 ? (
                         clubMembers.map(member => (
-                            <div key={member.id} className={styles.memberCard}>
+                            member?._id ?
+                            <div key={member?._id} className={styles.memberCard}>
                                 <div className={styles.memberAvatar}>
-                                    {member.name.charAt(0)}
+                                    {member?.name?.charAt(0)}
                                 </div>
                                 <div className={styles.memberInfo}>
-                                    <h3>{member.name}</h3>
-                                    <p>{member.email}</p>
+                                    <h3>{member?.name}</h3>
+                                    <p>{member?.email}</p>
                                 </div>
                                 <div className={styles.memberActions}>
                                     <div
-                                        className={`${styles.roleBadge} ${member.role.toLowerCase()}`}
+                                        className={`${styles.roleBadge} ${member?.role?.toLowerCase()}`}
                                         onClick={() => setSelectedMember(member)}
                                     >
-                                        {member.role}
+                                        {member?.role}
                                     </div>
                                 </div>
-                            </div>
+                            </div>:null
                         ))
                     ) : (
                         <div className={styles.emptyState}>
@@ -290,6 +325,22 @@ useEffect(() => {
                                         placeholder="John Doe"
                                     />
                                     {errors.includes(`name-${index}`) && (
+                                        <span className={styles.errorText}>Required field</span>
+                                    )}
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor={`email-${index}`}>Email*</label>
+                                    <input
+                                        id={`email-${index}`}
+                                        type="text"
+                                        name="email"
+                                        value={member.email}
+                                        onChange={(e) => handleChange(index, e)}
+                                        className={errors.includes(`email-${index}`) ? styles.errorInput : ''}
+                                        placeholder="johndoe@gmail.com"
+                                    />
+                                    {errors.includes(`email-${index}`) && (
                                         <span className={styles.errorText}>Required field</span>
                                     )}
                                 </div>

@@ -1,31 +1,68 @@
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect, useMemo } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 import styles from '../css/FacultyDashboard.module.css';
 
 const FacultyDashboard = () => {
-    const [clubs] = useState([
-        { id: 'c1', name: 'Literary Club', president: 'Alice Smith', facultyCoordinator: 'Dr. John Doe', membersCount: 120, category: 'Academic', status: 'Active' },
-        { id: 'c2', name: 'Robotics Club', president: 'Bob Johnson', facultyCoordinator: 'Prof. Jane Roe', membersCount: 85, category: 'Technical', status: 'Active' },
-        { id: 'c3', name: 'Sports Club', president: 'Charlie Brown', facultyCoordinator: 'Mr. David Lee', membersCount: 250, category: 'Sports', status: 'Active' },
-        { id: 'c4', name: 'Photography Club', president: 'Diana Prince', facultyCoordinator: 'Ms. Emily White', membersCount: 60, category: 'Arts', status: 'Active' },
-        { id: 'c5', name: 'Debate Society', president: 'Eve Adams', facultyCoordinator: 'Dr. Frank Green', membersCount: 95, category: 'Academic', status: 'Inactive' },
-    ]);
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterCategory, setFilterCategory] = useState('All');
-    const [filterStatus, setFilterStatus] = useState('All');
+    const navigate = useNavigate();
+    // Sample data - in a real app, this would come from an API
+    // const facultyInfo = {
+    //     id: 'f123',
+    //     name: 'Dr. John Doe',
+    //     email: 'john.doe@university.edu',
+    //     department: 'Computer Science',
+    //     clubId: 'c1' // The club this faculty is associated with
+    // };
+
+    const [club,setClub] = useState(
+        {
+            id: 'c1',
+            name: 'Literary Club',
+            president: 'Alice Smith',
+            faculty: 'Dr. John Doe',
+            membersCount: 120,
+            maxMembers: 150,
+            category: 'Academic',
+            status: 'Active',
+            members: [
+                { id: 'm1', regNo: '2023001', name: 'Alice Smith', status: 'Active', role: 'President', joinDate: '2022-01-15' },
+                { id: 'm2', regNo: '2023002', name: 'Bob Johnson', status: 'Active', role: 'Vice President', joinDate: '2022-02-10' },
+                { id: 'm3', regNo: '2023003', name: 'Charlie Brown', status: 'Active', role: 'Secretary', joinDate: '2022-03-05' },
+                { id: 'm4', regNo: '2023004', name: 'Diana Prince', status: 'Inactive', role: 'Member', joinDate: '2022-04-20', leaveDate: '2023-01-15' },
+                { id: 'm5', regNo: '2023005', name: 'Eve Adams', status: 'Active', role: 'Treasurer', joinDate: '2022-05-12' },
+            ]
+        },
+        
+    );
+
+    // const [searchTerm, setSearchTerm] = useState('');
+    // const [filterCategory, setFilterCategory] = useState('All');
+    // const [filterStatus, setFilterStatus] = useState('All');
     const [selectedClub, setSelectedClub] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
-    const filteredClubs = clubs.filter(club => {
-        const matchesSearch = club.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            club.president.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = filterCategory === 'All' || club.category === filterCategory;
-        const matchesStatus = filterStatus === 'All' || club.status === filterStatus;
-        return matchesSearch && matchesCategory && matchesStatus;
-    });
+    // // Find the club this faculty is associated with
+    // const facultyClub = useMemo(() => {
+    //     return clubs.find(club => club.id === facultyInfo.clubId);
+    // }, [clubs, facultyInfo.clubId]);
 
-    const uniqueCategories = ['All', ...new Set(clubs.map(club => club.category))];
+    // Filtered clubs based on search term and filter selections
+    // const filteredClubs = useMemo(() => {
+    //     return clubs.filter(club => {
+    //         if (club && club.name && club.category && club.status) {
+    //             const matchesSearch = club.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //                 club.category.toLowerCase().includes(searchTerm.toLowerCase());
+    //             const matchesCategory = filterCategory === 'All' || club.category === filterCategory;
+    //             const matchesStatus = filterStatus === 'All' || club.status === filterStatus;
+    //             return matchesSearch && matchesCategory && matchesStatus;
+    //         }
+    //         return false;
+    //     });
+    // }, [clubs, searchTerm, filterCategory, filterStatus]);
+
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -38,6 +75,20 @@ const FacultyDashboard = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(()=>{
+        const func = async () => {
+            const response = await axios.get(`http://localhost:8080/getClubData`, { withCredentials: true });
+            if(response.data !=undefined){
+                //filter the faculty with matching id from cookies from resposne.data
+                const facultyId = Cookies.get('id');
+                const facultyClubData = response.data.filter(club => club.facultyId === facultyId)[0];
+                console.log(facultyClubData);
+                setClub(facultyClubData);
+            }
+        };
+        func();
+    },[]);
+
     const getCategoryColor = (category) => {
         const colors = {
             'Academic': 'linear-gradient(135deg, #6C5CE7, #A55EEA)',
@@ -46,6 +97,10 @@ const FacultyDashboard = () => {
             'Arts': 'linear-gradient(135deg, #FD79A8, #E84393)'
         };
         return colors[category] || 'linear-gradient(135deg, #0984E3, #74B9FF)';
+    };
+
+    const getStatusColor = (status) => {
+        return status === 'Active' ? '#2ecc71' : '#e74c3c';
     };
 
     return (
@@ -58,33 +113,35 @@ const FacultyDashboard = () => {
             <header className={styles.header}>
                 <div className={styles.headerContent}>
                     <h1>Faculty Dashboard</h1>
-                    <p>Manage and oversee all student clubs</p>
+                    <p>Manage and oversee your student club</p>
                 </div>
 
-                {/* Profile Dropdown */}
-                <div className={styles.profileDropdown} ref={dropdownRef}>
-                    <button
-                        className={styles.profileButton}
-                        onClick={() => setShowDropdown(!showDropdown)}
-                    >
-                        <div className={styles.profileAvatar}>
-                            <span>F</span>
+                {/* profile button */}
+                <div className="profile-dropdown" ref={dropdownRef}>
+                    <button className="profile-button" onClick={() => setShowDropdown(!showDropdown)}>
+                        <div className="profile-avatar">
+                            <span>F</span> {/* Replace with admin initial or image */}
                         </div>
                         <span>Faculty</span>
-                        <i className={`${styles.dropdownArrow} ${showDropdown ? styles.open : ''}`}>▼</i>
+                        <i className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▼</i>
                     </button>
 
                     {showDropdown && (
-                        <div className={styles.dropdownMenu}>
-                            <div className={styles.dropdownItem}>
-                                <i className={styles.iconUser}>👤</i>
-                                <span>12458796</span>
+                        <div className="dropdown-menu">
+                            <div className="dropdown-item">
+                                <i className="icon-user">👤</i>
+                                {/* User Id to be given below */}
+                                <span>{Cookies?.get('id')}</span>
                             </div>
-                            <div
-                                className={styles.dropdownItem}
-                                onClick={() => console.log('Logging out...')}
-                            >
-                                <i className={styles.iconLogout}>⎋</i>
+                            <div className="dropdown-item" onClick={async () => {
+                                // Add your logout logic here
+                                const response = await axios.get("http://localhost:8080/logout", { withCredentials: true });
+                                if (response) {
+                                    navigate("/");
+                                    console.log('Logging out...');
+                                }
+                            }}>
+                                <i className="icon-logout">⎋</i>
                                 <span>Logout</span>
                             </div>
                         </div>
@@ -92,98 +149,95 @@ const FacultyDashboard = () => {
                 </div>
             </header>
 
-            {/* Filters */}
-            <div className={styles.filters}>
-                <div className={styles.searchBox}>
-                    <svg viewBox="0 0 24 24">
-                        <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-                    </svg>
-                    <input
-                        type="text"
-                        placeholder="Search clubs..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+            {/* Main Content */}
+            <div className={styles.mainContent}>
+                {/* Faculty Club Section */}
+                <section className={styles.facultyClubSection}>
+                    <div className={styles.sectionHeader}>
+                        <h2>Your Club</h2>
+                        <div className={styles.clubStatus}>
+                            <span className={styles.statusIndicator} style={{ backgroundColor: getStatusColor(club?.status) }}></span>
+                            <span>{club?.status}</span>
+                        </div>
+                    </div>
 
-                <div className={styles.selectWrapper}>
-                    <select
-                        value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value)}
-                    >
-                        {uniqueCategories.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                    </select>
-                    <div className={styles.selectArrow}>▼</div>
-                </div>
-
-                <div className={styles.selectWrapper}>
-                    <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                    >
-                        <option value="All">All Statuses</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                    <div className={styles.selectArrow}>▼</div>
-                </div>
-            </div>
-
-            {/* Clubs Overview */}
-            <section className={styles.clubSection}>
-                <div className={styles.sectionHeader}>
-                    <h2>Club Overview</h2>
-                    <span className={styles.countBadge}>
-                        {filteredClubs.length} {filteredClubs.length === 1 ? 'club' : 'clubs'}
-                    </span>
-                </div>
-
-                {filteredClubs.length > 0 ? (
-                    <div className={styles.clubGrid}>
-                        {filteredClubs.map(club => (
-                            <div
-                                key={club.id}
-                                className={styles.clubCard}
-                                onClick={() => setSelectedClub(club)}
-                                style={{
-                                    '--category-color': getCategoryColor(club.category)
-                                }}
-                            >
-                                <div className={styles.clubHeader}>
-                                    <h3>{club.name}</h3>
-                                    <span className={`${styles.statusBadge} ${club.status.toLowerCase()}`}>
-                                        {club.status}
-                                    </span>
-                                </div>
-                                <div className={styles.clubMeta}>
-                                    <div className={styles.metaItem}>
-                                        <span>President</span>
-                                        <p>{club.president}</p>
-                                    </div>
-                                    <div className={styles.metaItem}>
-                                        <span>Members</span>
-                                        <p>{club.membersCount}</p>
-                                    </div>
-                                    <div className={styles.metaItem}>
-                                        <span>Category</span>
-                                        <p>{club.category}</p>
-                                    </div>
-                                </div>
-                                <div className={styles.cardGlow}></div>
+                    <div className={styles.clubDetailsCard} style={{ '--category-color': getCategoryColor(club?.category) }}>
+                        <div className={styles.clubBasicInfo}>
+                            <div className={styles.clubNameCategory}>
+                                <h3>{club?.name}</h3>
+                                <span className={styles.clubCategory}>{club?.category}</span>
                             </div>
-                        ))}
+                            <div className={styles.membersCount}>
+                                <span className={styles.currentCount}>{club?.members?.length}</span>
+                                <span className={styles.maxCount}>/ {club?.maxMemberCount}</span>
+                                <span className={styles.membersLabel}>Members</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.clubLeadership}>
+                            <div className={styles.leaderCard}>
+                                <span className={styles.leaderRole}>President</span>
+                                <span className={styles.leaderName}>{club?.president}</span>
+                            </div>
+                            <div className={styles.leaderCard}>
+                                <span className={styles.leaderRole}>Faculty Coordinator</span>
+                                <span className={styles.leaderName}>{club?.faculty}</span>
+                            </div>
+                        </div>
+
+                        <div className={styles.progressBarContainer}>
+                            <div
+                                className={styles.progressBar}
+                                style={{
+                                    width: `${(club?.members?.length / club?.maxMemberCount) * 100}%`,
+                                    background: getCategoryColor(club?.category)
+                                }}
+                            ></div>
+                        </div>
                     </div>
-                ) : (
-                    <div className={styles.emptyState}>
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
-                        </svg>
-                        <p>No clubs found matching your criteria</p>
+                </section>
+
+                {/* Club Members Section */}
+                <section className={styles.membersSection}>
+                    <div className={styles.sectionHeader}>
+                        <h2>Club Members</h2>
+                        <span className={styles.countBadge}>
+                            {club?.members?.length || 0} members
+                        </span>
                     </div>
-                )}
-            </section>
+
+                    <div className={styles.membersTableContainer}>
+                        <table className={styles.membersTable}>
+                            <thead>
+                                <tr>
+                                    <th>Reg No</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr key={club?.president.id}>
+                                    <td>{club?.presidentId}</td>
+                                    <td>{club?.president}</td>
+                                    <td>{club?.presidentEmail}</td>
+                                    <td>President</td>
+
+                                </tr>
+                                {club?.members?.map(member => (
+                                    <tr key={member.id}>
+                                        <td>{member.regNo}</td>
+                                        <td>{member.name}</td>
+                                        <td>{member.email}</td>
+                                        <td>Member</td>
+                                    </tr>
+                                ))}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
 
             {/* Club Detail Modal */}
             {selectedClub && (
@@ -213,7 +267,7 @@ const FacultyDashboard = () => {
                             </div>
                             <div className={styles.detailItem}>
                                 <span>Total Members</span>
-                                <p>{selectedClub.membersCount}</p>
+                                <p>{selectedClub.membersCount}/{selectedClub.maxMembers}</p>
                             </div>
                             <div className={styles.detailItem}>
                                 <span>Category</span>

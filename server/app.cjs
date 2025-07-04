@@ -16,6 +16,7 @@ const Club = require("./models/clubs.cjs");
 const Faculty = require("./models/faculty.cjs");
 const Student = require("./models/students.cjs");
 const User = require("./models/User.cjs");
+const Request = require("./models/Request.cjs");
 
 const corsOptions = {
     origin: "http://localhost:5173",
@@ -169,7 +170,7 @@ app.post("/createNewClub", async (req, res) => {
                         members: [{ regNo: president, name: studentDetails[0].name }]
                     });
                     newClub_.save();
-                    console.log("ClUb created is: ");
+                    console.log("Club created is: ");
                     console.log(newClub_);
                     res.json({ message: "Club Created Successfully", flag: "success", presidentName: studentDetails[0].name, facultyName: facultyDetails[0].name });
                 } else {
@@ -198,7 +199,7 @@ app.get("/getClubData", async (req, res) => {
             //Find the name of the president and faculty
             let facultyDetails = await User.find({ id: element.faculty, role: "faculty" });
             let studentDetails = await User.find({ id: element.president, role: "president" });
-            data.push({ _id: element._id, name: element.name.trim(), president: studentDetails[0].name, faculty: facultyDetails[0].name, members: element.members, maxMemberCount: element.maxMembers, category: element.category, status: element.status })
+            data.push({ _id: element._id, name: element.name.trim(), presidentId: element.president, presidentEmail: studentDetails[0].email, president: studentDetails[0].name, facultyId: element.faculty, faculty: facultyDetails[0].name, members: element.members, maxMemberCount: element.maxMembers, category: element.category, status: element.status })
         }
         res.json(data);
     } catch (err) {
@@ -212,7 +213,8 @@ app.get("/getMembers/:president_id", async (req, res) => {
     try {
         const { president_id } = req.params;
         const clubMembers = await Club.find({ president: president_id });
-        res.json({ data_: clubMembers[0].members, flag: "success",faculty_id:clubMembers[0].faculty });
+        console.log(clubMembers[1]);
+        res.json({ data_: [...clubMembers[1].members], flag: "success", faculty_id: clubMembers[0].faculty, clubName: clubMembers[0].name });
     } catch (err) {
         res.json({ message: err.message, flag: "error" });
     }
@@ -226,15 +228,104 @@ app.get("/getInfo/:president_id/:faculty_id", async (req, res) => {
         let studentDetails = await User.find({ id: president_id, role: "president" });
         console.log(req.params);
 
-        let obj1={_id:facultyDetails[0]._id,regNo:faculty_id,name:facultyDetails[0].name,role:"Faculty",email:facultyDetails[0].email};
-        let obj2={_id:studentDetails[0]._id,regNo:president_id,name:studentDetails[0].name,role:"President",email:studentDetails[0].email};
-        res.json({data_:[obj1,obj2],flag:"success"});
+        let obj1 = { _id: facultyDetails[0]._id, regNo: faculty_id, name: facultyDetails[0].name, role: "Faculty", email: facultyDetails[0].email };
+        let obj2 = { _id: studentDetails[0]._id, regNo: president_id, name: studentDetails[0].name, role: "President", email: studentDetails[0].email };
+        res.json({ data_: [obj1, obj2], flag: "success" });
     } catch (err) {
         res.json({ message: err.message, flag: "error" });
     }
 });
 
+app.post("/addNewMember", async (req, res) => {
+    try {
 
+        const today = new Date();
+        const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+        const date = today.toLocaleString('en-US', options);
+
+
+        let { presidentName, clubName, members } = req.body;
+        // console.log(req.body);
+        // for (let index = 0; index < members.length; index++) {
+        //     members[index].clubName=clubName;
+        //     members[index].presidentName=presidentName;
+        //     members[index].date=date;
+        //     members[index].status="Pending";
+        // }
+
+        // console.log(members);
+        const addMember = new Request({
+            clubName: clubName,
+            presidentName: presidentName,
+            members: members,
+            date: date,
+            status: "Pending",
+            members: members
+        });
+        addMember.save();
+        console.log(addMember);
+        if (addMember) {
+            res.json({ message: "Member Added Successfully", flag: "success" });
+        }
+    } catch (err) {
+        res.json({ message: err.message, flag: "error" });
+    }
+});
+
+app.get("/getNewMembers", async (req, res) => {
+    try {
+        console.log("Fetching new members requests");
+
+        const requests = await Request.find();
+        console.log(requests);
+        res.json({
+            data_: requests,
+            flag: "success"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error fetching data",
+            flag: "error"
+        });
+    }
+});
+
+
+app.post("/requestApproval/:id", async (req, res) => {
+    try {
+        let { status } = req.body;
+        let { id } = req.params;
+        const update = await Request.updateOne({ _id: id }, { status: status });
+        console.log("Updated");
+        console.log(update);
+        if (update.modifiedCount > 0) {
+            res.json({ message: "Member Added Successfully", flag: "success" });
+
+            if(status==="Approved"){
+                const userData=await Request.find({_id:id});
+                // add new members in the particular club collection ._detils
+                const clubData = await Club.find({ name: userData[0].clubName });
+                let user_ = new Club({
+                    name: clubData[0].name,
+                    president: clubData[0].president,
+                    category: clubData[0].category,
+                    faculty: clubData[0].faculty,
+                    status: clubData[0].status,
+                    maxMembers: clubData[0].maxMembers,
+                    members: [...clubData[0].members, ...userData[0].members]
+                });
+                // const user_=new Club({
+                //     members:userData[0].members
+                // });
+                user_.save();
+            }
+        }
+
+    } catch (err) {
+        res.json({ message: err.message, flag: "error" });
+    }
+})
 //logging out.
 app.get("/logout", async (req, res) => {
     res.cookie("login", "false", { secure: false });

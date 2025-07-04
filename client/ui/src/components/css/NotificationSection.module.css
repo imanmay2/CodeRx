@@ -97,15 +97,15 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.notificationCard.pending {
+.notificationCard.Pending {
     border-left: 4px solid #f39c12;
 }
 
-.notificationCard.approved {
+.notificationCard.Approved {
     border-left: 4px solid #2ecc71;
 }
 
-.notificationCard.rejected {
+.notificationCard.Rejected {
     border-left: 4px solid #e74c3c;
 }
 
@@ -168,17 +168,17 @@
     text-transform: capitalize;
 }
 
-.statusBadge.pending {
+.statusBadge.Pending {
     background: rgba(243, 156, 18, 0.2);
     color: #f39c12;
 }
 
-.statusBadge.approved {
+.statusBadge.Approved {
     background: rgba(46, 204, 113, 0.2);
     color: #2ecc71;
 }
 
-.statusBadge.rejected {
+.statusBadge.Rejected {
     background: rgba(231, 76, 60, 0.2);
     color: #e74c3c;
 }

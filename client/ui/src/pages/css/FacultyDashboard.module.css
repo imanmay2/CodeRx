@@ -1,333 +1,63 @@
-/* FacultyDashboard.module.css */
-
-.dashboard {
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    min-height: 100vh;
-    color: rgba(255, 255, 255, 0.92);
-    font-family: 'Inter', sans-serif;
-    padding: 2rem;
-    max-width: 1800px;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Animated Background Elements */
-.bgBlur1,
-.bgBlur2 {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.15;
-    z-index: 0;
-}
-
-.bgBlur1 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, #6C5CE7, transparent 70%);
-    top: -200px;
-    right: -200px;
-}
-
-.bgBlur2 {
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, #00B894, transparent 70%);
-    bottom: -400px;
-    left: -300px;
-}
-
-/* Header */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Main Content */
+.mainContent {
+    display: grid;
+    gap: 2.5rem;
     position: relative;
     z-index: 1;
+    margin-top: 5rem;
+    width: 65rem;
 }
 
-.headerContent h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    margin: 0;
-    background: linear-gradient(90deg, #a18cd1, #fbc2eb);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    letter-spacing: -0.5px;
-}
-
-.headerContent p {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0.5rem 0 0;
-    font-size: 1.1rem;
-}
-
-/* Profile Dropdown */
-.profileDropdown {
-    position: relative;
-}
-
-.profileButton {
+.header {
+    margin-top: 3rem;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 0.75rem 1.25rem;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    flex-direction: row;
+    justify-content: space-between;
 }
 
-.profileButton:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-.profileAvatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6C5CE7, #A55EEA);
+.sectionHeader {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: white;
-    box-shadow: 0 4px 15px rgba(106, 90, 231, 0.4);
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
 }
 
-.dropdownArrow {
-    font-size: 0.7rem;
-    transition: transform 0.3s ease;
-    margin-left: 0.5rem;
-}
-
-.dropdownArrow.open {
-    transform: rotate(180deg);
-}
-
-.dropdownMenu {
-    /* position: absolute;
-    right: 0;
-    top: calc(100% + 10px);
-    background: rgba(30, 41, 59, 0.95);
-    border-radius: 12px;
-    padding: 0.75rem 0;
-    min-width: 200px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    animation: fadeIn 0.3s ease; */
-
-    /* width: 100%; */
-    position: absolute;
-    padding: 0.75rem 0;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    top: calc(100% + 10px);
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    appearance: none;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.dropdownItem {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1.25rem;
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.dropdownItem:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-}
-
-.dropdownItem span {
-    margin-left: 0.75rem;
-}
-
-.iconUser,
-.iconLogout {
-    font-size: 1rem;
-}
-
-/* Filters */
-.filters {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-    position: relative;
-}
-
-.searchBox {
-    flex: 1;
-    min-width: 300px;
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.searchBox svg {
-    position: absolute;
-    left: 1.25rem;
-    width: 20px;
-    height: 20px;
-    fill: rgba(255, 255, 255, 0.6);
-}
-
-.searchBox input {
-    width: 100%;
-    padding: 1rem 1.5rem 1rem 3rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.searchBox input:focus {
-    outline: none;
-    border-color: rgba(161, 140, 209, 0.5);
-    box-shadow: 0 0 0 3px rgba(161, 140, 209, 0.2);
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.selectWrapper {
-    position: relative;
-    min-width: 200px;
-    flex: 1;
-}
-
-.selectWrapper select {
-    width: 100%;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    appearance: none;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.selectWrapper select:focus {
-    outline: none;
-    border-color: rgba(161, 140, 209, 0.5);
-    box-shadow: 0 0 0 3px rgba(161, 140, 209, 0.2);
-    background: rgba(255, 255, 255, 0.08);
-    z-index: 101;
-}
-
-.selectArrow {
-    position: absolute;
-    right: 1.25rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.7rem;
-}
-
-/* Club Section */
-.clubSection {
+/* Faculty Club Section */
+.facultyClubSection {
     background: rgba(30, 41, 59, 0.3);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
 }
 
-.sectionHeader {
+.clubStatus {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 2.5rem;
-}
-
-.sectionHeader h2 {
-    font-size: 2rem;
-    margin: 0;
-    font-weight: 700;
-    color: white;
-    background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.countBadge {
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    gap: 0.5rem;
     font-weight: 600;
-    font-size: 1rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.clubGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+.statusIndicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
-.clubCard {
+.clubDetailsCard {
     background: rgba(15, 23, 42, 0.4);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.clubCard::before {
+.clubDetailsCard::before {
     content: '';
     position: absolute;
     top: 0;
@@ -339,339 +69,221 @@
     z-index: -1;
 }
 
-.clubCard:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.cardGlow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--category-color);
-    opacity: 0;
-    z-index: -1;
-    transition: opacity 0.4s ease;
-}
-
-.clubCard:hover .cardGlow {
-    opacity: 0.1;
-}
-
-.clubHeader {
+.clubBasicInfo {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 2rem;
 }
 
-.clubHeader h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-    line-height: 1.3;
-}
-
-.statusBadge {
-    padding: 0.5rem 1.25rem;
-    border-radius: 50px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.statusBadge.active {
-    background: rgba(46, 204, 113, 0.2);
-    color: #2ecc71;
-    box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
-}
-
-.statusBadge.inactive {
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.1);
-}
-
-.clubMeta {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-}
-
-.metaItem span {
-    display: block;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 0.5rem;
-}
-
-.metaItem p {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-}
-
-.emptyState {
-    grid-column: 1 / -1;
+.clubNameCategory {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-align: center;
+    gap: 0.5rem;
 }
 
-.emptyState svg {
-    width: 60px;
-    height: 60px;
-    fill: rgba(255, 255, 255, 0.2);
-    margin-bottom: 1.5rem;
-}
-
-.emptyState p {
+.clubNameCategory h3 {
     margin: 0;
-    font-size: 1.1rem;
-}
-
-/* Modal */
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
-    animation: fadeIn 0.3s ease;
-}
-
-.modalContent {
-    background: rgba(30, 41, 59, 0.95);
-    border-radius: 24px;
-    padding: 3rem;
-    width: 90%;
-    max-width: 700px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    transform-style: preserve-3d;
-    perspective: 1000px;
-}
-
-.modalContent::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: var(--category-color);
-    opacity: 0.1;
-    z-index: -1;
-    animation: rotate 15s linear infinite;
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.modalGlow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--category-color);
-    opacity: 0.05;
-    z-index: -1;
-}
-
-.closeButton {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: none;
-    border: none;
     font-size: 2rem;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    font-weight: 700;
+    color: white;
 }
 
-.closeButton:hover {
-    color: white;
+.clubCategory {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
     background: rgba(255, 255, 255, 0.1);
-    transform: rotate(90deg);
-}
-
-.modalContent h3 {
-    margin-top: 0;
-    margin-bottom: 2.5rem;
-    font-size: 2.2rem;
     color: white;
-    font-weight: 800;
-    background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: fit-content;
 }
 
-.modalGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+.membersCount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
-.detailItem {
+.currentCount {
+    color: white;
+}
+
+.maxCount {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.membersLabel {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-left: 0.5rem;
+}
+
+.clubDescription {
+    margin-bottom: 2.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+.clubLeadership {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.leaderCard {
+    flex: 1;
     background: rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
 }
 
-.detailItem:hover {
+.leaderCard:hover {
     transform: translateY(-5px);
     background: rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.detailItem span {
+.leaderRole {
     display: block;
     font-size: 0.95rem;
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 0.75rem;
 }
 
-.detailItem p {
+.leaderName {
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
     color: white;
 }
 
-.statusText {
-    display: inline-block;
-    padding: 0.5rem 1.25rem;
-    border-radius: 50px;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
+.progressBarContainer {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Members Section */
+.membersSection {
+    background: rgba(30, 41, 59, 0.3);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.statusText.active {
-    background: rgba(46, 204, 113, 0.2);
-    color: #2ecc71;
-    box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
+.membersTableContainer {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(10px);
 }
 
-.statusText.inactive {
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.1);
+.membersTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+.membersTable th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.membersTable td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.membersTable tr:last-child td {
+    border-bottom: none;
+}
+
+.membersTable tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.memberStatus {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Other Clubs Section */
+.otherClubsSection {
+    background: rgba(30, 41, 59, 0.3);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .clubGrid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-}
-
 @media (max-width: 992px) {
-    .dashboard {
-        padding: 1.5rem;
-    }
-
-    .headerContent h1 {
-        font-size: 2.2rem;
-    }
-
-    .clubSection {
-        padding: 2rem;
-    }
-
-    .modalGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .clubMeta {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .header {
+    .clubBasicInfo {
         flex-direction: column;
         align-items: flex-start;
         gap: 1.5rem;
     }
 
-    .profileDropdown {
-        align-self: flex-end;
-    }
-
-    .filters {
+    .clubLeadership {
         flex-direction: column;
-        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .facultyClubSection,
+    .membersSection,
+    .otherClubsSection {
+        padding: 1.5rem;
     }
 
-    .searchBox,
-    .selectWrapper {
-        min-width: 100%;
+    .clubDetailsCard {
+        padding: 1.5rem;
     }
 
-    .sectionHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+    .clubNameCategory h3 {
+        font-size: 1.5rem;
+    }
+
+    .membersTable th,
+    .membersTable td {
+        padding: 0.75rem 1rem;
     }
 }
 
 @media (max-width: 576px) {
-    .clubCard {
-        padding: 1.5rem;
+    .clubNameCategory h3 {
+        font-size: 1.3rem;
     }
 
-    .clubMeta {
-        grid-template-columns: 1fr;
-    }
-
-    .modalContent {
-        padding: 2rem 1.5rem;
-    }
-
-    .detailItem {
-        padding: 1.25rem;
-    }
-
-    .detailItem p {
+    .leaderName {
         font-size: 1.1rem;
     }
 }

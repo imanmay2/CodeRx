@@ -1,55 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 import styles from '../css/NotificationSection.module.css';
 
 const NotificationsSection = () => {
     const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            type: 'membership',
-            club: 'Robotics Club',
-            president: 'Bob Johnson',
-            message: 'Request to add 5 new members',
-            status: 'pending',
-            date: '2023-06-15T10:30:00',
-            members: ['Sarah Lee', 'Michael Chen', 'Emma Wilson', 'David Kim', 'Priya Patel']
-        },
-        {
-            id: 2,
-            type: 'membership',
-            club: 'Literary Club',
-            president: 'Alice Smith',
-            message: 'Request to add 3 new members',
-            status: 'pending',
-            date: '2023-06-14T14:45:00',
-            members: ['James Wilson', 'Sophia Martinez', 'Liam Brown']
-        },
-        {
-            id: 3,
-            type: 'membership',
-            club: 'Photography Club',
-            president: 'Diana Prince',
-            message: 'Request to add 2 new members',
-            status: 'approved',
-            date: '2023-06-10T09:15:00',
-            members: ['Olivia Johnson', 'Noah Garcia']
-        }
     ]);
 
-    const [activeTab, setActiveTab] = useState('pending');
+    const [activeTab, setActiveTab] = useState('Pending');
     const [selectedNotification, setSelectedNotification] = useState(null);
 
-    const handleApprove = (id) => {
-        setNotifications(notifications.map(notif =>
-            notif.id === id ? { ...notif, status: 'approved' } : notif
-        ));
-        setSelectedNotification(null);
-    };
-
-    const handleReject = (id) => {
-        setNotifications(notifications.map(notif =>
-            notif.id === id ? { ...notif, status: 'rejected' } : notif
-        ));
-        setSelectedNotification(null);
+    const handleApproval = async (id,status) => {
+        const response = await axios.post(`http://localhost:8080/requestApproval/${id}`, { status }, { withCredentials: true });
+        if (response.data.flag === "success") {
+            console.log("Request updated successfully");
+            setNotifications(notifications.map(notif =>
+                notif._id === id ? { ...notif, status: status } : notif
+            ));
+            setSelectedNotification(null);
+        } else {
+            console.error("Failed to update request");
+        }
+        
     };
 
     const filteredNotifications = notifications.filter(notif =>
@@ -66,29 +37,40 @@ const NotificationsSection = () => {
         });
     };
 
+    useEffect(()=>{
+        const fetchnotifications = async () => {
+            const response = await axios.get("http://localhost:8080/getNewMembers",{withCredentials:true});
+            if(response.data.flag === "success"){
+                // [{_id,clubName,presidentName,status,date,members:[name1,name2]}]
+                setNotifications(response.data.data_);
+            }
+        }
+        fetchnotifications();
+    },[]);
+
     return (
         <div className={styles.notificationsContainer}>
             <div className={styles.notificationsHeader}>
                 <h2>Membership Requests</h2>
                 <div className={styles.tabs}>
                     <button
-                        className={activeTab === 'pending' ? styles.active : ''}
-                        onClick={() => setActiveTab('pending')}
+                        className={activeTab === 'Pending' ? styles.active : ''}
+                        onClick={() => setActiveTab('Pending')}
                     >
                         Pending
                         <span className={styles.badge}>
-                            {notifications.filter(n => n.status === 'pending').length}
+                            {notifications.filter(n => n.status === 'Pending').length}
                         </span>
                     </button>
                     <button
-                        className={activeTab === 'approved' ? styles.active : ''}
-                        onClick={() => setActiveTab('approved')}
+                        className={activeTab === 'Approved' ? styles.active : ''}
+                        onClick={() => setActiveTab('Approved')}
                     >
                         Approved
                     </button>
                     <button
-                        className={activeTab === 'rejected' ? styles.active : ''}
-                        onClick={() => setActiveTab('rejected')}
+                        className={activeTab === 'Rejected' ? styles.active : ''}
+                        onClick={() => setActiveTab('Rejected')}
                     >
                         Rejected
                     </button>
@@ -105,24 +87,25 @@ const NotificationsSection = () => {
                 {filteredNotifications.length > 0 ? (
                     <div className={styles.notificationsList}>
                         {filteredNotifications.map(notification => (
+                            notification?._id ?
                             <div
-                                key={notification.id}
+                                key={notification._id}
                                 className={`${styles.notificationCard} ${styles[notification.status]}`}
                                 onClick={() => setSelectedNotification(notification)}
                             >
                                 <div className={styles.notificationIcon}>
-                                    {notification.type === 'membership' && (
+                                    {true && (
                                         <svg viewBox="0 0 24 24">
                                             <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
                                         </svg>
                                     )}
                                 </div>
                                 <div className={styles.notificationContent}>
-                                    <h3>{notification.club}</h3>
-                                    <p>{notification.message}</p>
+                                    <h3>{notification.clubName}</h3>
+                                    <p>Request to add {notification.members.length} members</p>
                                     <div className={styles.notificationMeta}>
-                                        <span className={styles.president}>{notification.president}</span>
-                                        <span className={styles.date}>{formatDate(notification.date)}</span>
+                                        <span className={styles.president}>{notification.presidentName}</span>
+                                        <span className={styles.date}>{notification.date}</span>
                                     </div>
                                 </div>
                                 <div className={styles.notificationStatus}>
@@ -130,7 +113,7 @@ const NotificationsSection = () => {
                                         {notification.status}
                                     </span>
                                 </div>
-                            </div>
+                            </div> :null
                         ))}
                     </div>
                 ) : (
@@ -152,37 +135,37 @@ const NotificationsSection = () => {
                         >
                             &times;
                         </button>
-                        <h3>{selectedNotification.club} Membership Request</h3>
+                        <h3>{selectedNotification.clubName} Membership Request</h3>
                         <div className={styles.modalHeader}>
-                            <span className={styles.president}>From: {selectedNotification.president}</span>
+                            <span className={styles.president}>From: {selectedNotification.presidentName}</span>
                             <span className={styles.date}>{formatDate(selectedNotification.date)}</span>
                         </div>
 
                         <div className={styles.membersList}>
                             <h4>Requested Members:</h4>
                             <ul>
-                                {selectedNotification.members.map((member, index) => (
+                                {selectedNotification?.members?.map((member, index) => (
                                     <li key={index}>
                                         <span className={styles.memberAvatar}>
-                                            {member.charAt(0)}
+                                            {member.name.charAt(0)}
                                         </span>
-                                        {member}
+                                        {member.name}({member.email})
                                     </li>
                                 ))}
                             </ul>
                         </div>
 
-                        {selectedNotification.status === 'pending' && (
+                        {selectedNotification.status === 'Pending' && (
                             <div className={styles.actionButtons}>
                                 <button
                                     className={styles.approveBtn}
-                                    onClick={() => handleApprove(selectedNotification.id)}
+                                    onClick={() => handleApproval(selectedNotification._id,'Approved')}
                                 >
                                     Approve Request
                                 </button>
                                 <button
                                     className={styles.rejectBtn}
-                                    onClick={() => handleReject(selectedNotification.id)}
+                                    onClick={() => handleApproval(selectedNotification._id,'Rejected')}
                                 >
                                     Reject Request
                                 </button>
