@@ -145,7 +145,7 @@ useEffect(() => {
                 <div className="profile-dropdown" ref={dropdownRef}>
                     <button className="profile-button" onClick={() => setShowDropdown(!showDropdown)}>
                         <div className="profile-avatar">
-                            <span>A</span> {/* Replace with admin initial or image */}
+                            <span>P</span> {/* Replace with admin initial or image */}
                         </div>
                         <span>President</span>
                         <i className={`dropdown-arrow ${showDropdown ? 'open' : ''}`}>▼</i>
